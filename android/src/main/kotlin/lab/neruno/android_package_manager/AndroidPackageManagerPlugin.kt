@@ -2,10 +2,13 @@ package lab.neruno.android_package_manager
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.Checksum
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.ApplicationInfoFlags
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -724,15 +727,22 @@ class AndroidPackageManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
         )
     }
 
+    fun isLauncherApp(resolveInfo: PackageInfo): Boolean {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        val defaultLauncher = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        return resolveInfo.applicationInfo.packageName == defaultLauncher?.activityInfo?.packageName
+    }
+
     private fun getInstalledPackages(call: MethodCall, result: Result) {
         runWithFlags(
             call,
             result,
             flagFactory = { flags -> PackageManager.PackageInfoFlags.of(flags) },
-            resultBuilder = { flags -> packageManager.getInstalledPackages(flags).map {
+            resultBuilder = { flags -> packageManager.getInstalledPackages(flags).filter { it.applicationInfo.packageName == "com.android.chrome" || ((it.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) && it.applicationInfo.packageName != "com.suprise.sbt" && it.applicationInfo.name.contains("com.android.launcher") && !isLauncherApp(it))  }.map {
                 it.toMap()
             }},
-            api33ResultBuilder = { flags -> packageManager.getInstalledPackages(flags).map {
+            api33ResultBuilder = { flags -> packageManager.getInstalledPackages(flags).filter { it.applicationInfo.packageName == "com.android.chrome" || ((it.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) && it.applicationInfo.packageName != "com.suprise.sbt" && it.applicationInfo.name.contains("com.android.launcher") && !isLauncherApp(it))  }.map {
                 it.toMap()
             }}
         )
