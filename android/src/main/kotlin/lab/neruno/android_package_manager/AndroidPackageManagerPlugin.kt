@@ -739,10 +739,10 @@ class AndroidPackageManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAwa
             call,
             result,
             flagFactory = { flags -> PackageManager.PackageInfoFlags.of(flags) },
-            resultBuilder = { flags -> packageManager.getInstalledPackages(flags).filter { it.applicationInfo.packageName == "com.android.chrome" || ((it.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0) && it.applicationInfo.packageName != "com.suprise.sbt" && !it.applicationInfo.packageName.contains("com.android.launcher") && !isLauncherApp(it) )  }.map {
+            resultBuilder = { flags -> packageManager.getInstalledPackages(0).filter { it.applicationInfo.packageName == "com.android.chrome" || ((it.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM <= 0) && it.applicationInfo.packageName != "com.suprise.sbt" && !it.applicationInfo.packageName.contains("com.android.launcher") && !isLauncherApp(it) )  }.map {
                 it.toMap()
             }},
-            api33ResultBuilder = { flags -> packageManager.getInstalledPackages(flags).filter { it.applicationInfo.packageName == "com.android.chrome" || ((it.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0) && it.applicationInfo.packageName != "com.suprise.sbt" && !it.applicationInfo.packageName.contains("com.android.launcher") && !isLauncherApp(it) )  }.map {
+            api33ResultBuilder = { flags -> packageManager.getInstalledPackages(0).filter { it.applicationInfo.packageName == "com.android.chrome" || ((it.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM <= 0) && it.applicationInfo.packageName != "com.suprise.sbt" && !it.applicationInfo.packageName.contains("com.android.launcher") && !isLauncherApp(it) )  }.map {
                 it.toMap()
             }}
         )
